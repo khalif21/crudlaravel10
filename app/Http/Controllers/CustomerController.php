@@ -8,18 +8,21 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Exports\CustomerExport;
 use App\Imports\CustomerImport;
+use Illuminate\Support\Facades\Session;
 
 class CustomerController extends Controller
 {
     public function index(Request $request){
 
         if($request->has('search')){
-            $data = Customer::where('nama', 'like', '%' . $request->search . '%')
-            ->orWhere('statuscleaning', 'like', '%' . $request->search . '%')
-            ->orWhere('room', 'like', '%' . $request->search . '%')
-            ->paginate(5);
+            $data = Customer::where('meetingroom', 'like', '%' . $request->search . '%')
+            ->orWhere('customer', 'like', '%' . $request->search . '%')
+            ->orWhere('created_at', 'like', '%' . $request->search . '%')
+            ->paginate(10);
+            Session::put('halaman_url', request()->FullUrl());
         }else{
-            $data = Customer::paginate(5);
+            $data = Customer::paginate(10);
+            Session::put('halaman_url', request()->FullUrl());
         }
         //dd($data);
         return view('datacustomer',compact('data'));
@@ -32,7 +35,17 @@ class CustomerController extends Controller
 
     public function insertdata(Request $request){
         //dd($request->all());
-        Customer::create($request->all());
+        $this->validate($request,([
+            'customer' => 'required|max:500|min:5',
+            'meetingroom' => 'required|max:500|min:3',
+        ]));
+
+        $data = Customer::create($request->all());
+        if($request->hasfile('beo')){
+            $request->file('beo')->move('pdfs/', $request->file('beo')->getClientOriginalName());
+            $data->beo = $request->file('beo')->getClientOriginalName();
+            $data->save();
+        }
         return redirect()->route('customer')->with('success','Data Berhasil Di Tambahkan!');
     }
 
@@ -47,6 +60,9 @@ class CustomerController extends Controller
     public function updatedata(Request $request,$id){
         $data = Customer::find($id);
         $data->update($request->all());
+        if(session('halaman_url')){
+            return Redirect(session('halaman_url'))->with('success','Data Berhasil Di Update!');
+        }
         return redirect()->route('customer')->with('success','Data Berhasil Di Update!');
 
     }
@@ -80,6 +96,7 @@ class CustomerController extends Controller
         Excel::import(new CustomerImport, \public_path('/CustomerData/'.$namafile));
         return \redirect()->back();
     }
+    
 
 
 }

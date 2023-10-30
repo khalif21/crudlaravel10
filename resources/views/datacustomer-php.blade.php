@@ -35,24 +35,30 @@
 
 <body>
 
-    <h1 class="text-center mb-4">Data Cleaning Status</h1>
+    <h1 class="text-center mb-4">MERBIS SMD MEETINGROOM</h1>
 
     <table id="customers">
         <tr>
             <th>No</th>
-            <th>Nama</th>
-            <th>Room</th>
-            <th>Status Cleaning</th>
-        </tr>
-        @php
-            $no=1;
-        @endphp
-        @foreach ($data as $row)
+            <th>Meeting Room</th>
+            <th>Customer</th>
+            <th>Request</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Created</th>
+         </tr>
+            @php
+                $no = 1;
+            @endphp
+            @foreach ($data as $row)
         <tr>
             <td>{{ $no++ }}</td>
-            <td>{{ $row->nama }}</td>
-            <td>{{ $row->room }}</td>
-            <td>{{ $row->statuscleaning }}</td>
+            <td>{{ $row->meetingroom }}</td>
+            <td>{{ $row->customer }}</td>
+            <td>{{ $row->request }}</td>
+            <td>{{ $row->date }}</td>
+            <td>{{ $row->time }}</td>
+            <td>{{ $row->created_at->format('d M Y') }}</td>
         </tr>
         @endforeach
 

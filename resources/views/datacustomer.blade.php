@@ -1,29 +1,38 @@
-<!doctype html>
-<html lang="en">
+@extends('layout.admin')
+@push('css')
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
+  integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+@endpush
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- ToasTR CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
-        integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+@section('content')
 
-    <title>CLEANING STATUS</title>
-</head>
-
-<body>
-    <h1 class="text-center mb-4">Data Cleaning Status</h1>
-
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+            <h1 class="text-center">DATA REQUEST BANQUET EVENT ORDER</h1>
+          <!-- /.col -->
+          {{-- <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard v2</li>
+            </ol>
+          </div><!-- /.col --> --}}
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
     <div class="container">
         <div class="row">
             <div class="col"><a href="/tambahcustomer" class="btn btn-info">Tambah+</a></div>
-
+            {{-- {{Session::get('halaman_url')}} --}}
+    
             <div class="row">
                 <div class="col mt-2"><a href="/exportpdf" class="btn btn-danger">Export PDF</a>
                     <a href="/exportexcel" class="btn btn-success">Export Excel</a>
@@ -38,7 +47,7 @@
                         <input type="search" class="form-control" name="search">
                     </form>
                 </div>
-
+    
                 <!-- Modal -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
@@ -65,16 +74,19 @@
                     </form>
                     </div>
                 </div>
-
-
+    
+    
                 <div class="row">
-                    <table class="table">
+                    <table class="table mt-3 mb-3">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Room</th>
-                                <th scope="col">Cleaning Status</th>
+                                <th scope="col">Meeting Room</th>
+                                <th scope="col">Customer</th>
+                                <th scope="col">Request</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">B.E.O</th>
                                 <th scope="col">Created</th>
                                 <th scope="col">Action</th>
                             </tr>
@@ -83,13 +95,18 @@
                             @php
                                 $no = 1;
                             @endphp
-
+    
                             @foreach ($data as $index => $row)
                                 <tr>
                                     <th scope="row">{{ $index + $data->firstitem() }}</th>
-                                    <td>{{ $row->nama }}</td>
-                                    <td>{{ $row->room }}</td>
-                                    <td>{{ $row->statuscleaning }}</td>
+                                    <td>{{ $row->meetingroom }}</td>
+                                    <td>{{ $row->customer }}</td>
+                                    <td>{{ $row->request }}</td>
+                                    <td>{{ $row->date }}</td>
+                                    <td>{{ $row->time }}</td>
+                                    <td>
+                                        <a href="{{ asset('pdfs/'. $row->beo)}}" target="_blank">preview pdf </a>
+                                    </td>
                                     <td>{{ $row->created_at->format('d M Y') }}</td>
                                     <td>
                                         <a href="/tampilkandata/{{ $row->id }}" class="btn btn-info">Edit</a>
@@ -98,16 +115,21 @@
                                     </td>
                                 </tr>
                             @endforeach
-
+    
                         </tbody>
                     </table>
                     {{ $data->links() }}
                 </div>
             </div>
+        </div>
+</div>
 
 
 
-            <!-- Optional JavaScript; choose one of the two! -->
+@endsection
+
+@push('scripts')
+    <!-- Optional JavaScript; choose one of the two! -->
 
             <!-- Option 1: Bootstrap Bundle with Popper -->
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -137,18 +159,18 @@
 </body>
 <script>
     $('.delete').click(function() {
-        var pegawaiid = $(this).attr('data-id');
-        var room = $(this).attr('data-room');
+        var customerid = $(this).attr('data-id');
+        var meetingroomid = $(this).attr('data-meetingroom');
         swal({
                 title: "Kamu yakin?",
-                text: "Setelah delete,data room " + room + " tidak bisa di kembalikan!",
+                text: "Setelah delete,data Meeting Room " + " tidak bisa di kembalikan!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
             })
             .then((willDelete) => {
                 if (willDelete) {
-                    window.location = "/deletedata/" + pegawaiid + ""
+                    window.location = "/deletedata/" + customerid + ""
                     swal("Poof! Data anda telah di hapus", {
                         icon: "success",
                     });
@@ -163,5 +185,4 @@
         toastr.success("{{ Session::get('success') }}");
     @endif
 </script>
-
-</html>
+@endpush

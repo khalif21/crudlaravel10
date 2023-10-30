@@ -15,9 +15,11 @@ class CustomerImport implements ToModel
     public function model(array $row)
     {
         return new Customer([
-            'nama' => $row[1],
-            'room' => $row[2],
-            'statuscleaning' => $row[3]
+            'meetingroom' => $row[1],
+            'customer' => $row[2],
+            'request' => $row[3],
+            'date' => $row[4],
+            'time' => $row[5]
         ]);
     }
 }

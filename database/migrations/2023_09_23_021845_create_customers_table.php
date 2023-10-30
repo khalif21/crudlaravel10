@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('nama',NULL);
-            $table->integer('room');
-            $table->enum('statuscleaning',['Clean','Not Clean','Under Maintenance',NULL]);
+            $table->string('meetingroom');
+            $table->string('customer');
+            $table->string('request');
+            $table->date('date')->format('d M Y');
+            $table->time('time');
+            $table->string('beo')->nullable();
             $table->timestamps();
         });
     }
